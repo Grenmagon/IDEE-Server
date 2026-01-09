@@ -30,6 +30,8 @@ class Funfact
 
 class LawDetailShort
 {
+    String url;
+    String dokid;
     String id;
     String title;
 }

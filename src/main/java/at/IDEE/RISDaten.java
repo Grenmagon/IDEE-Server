@@ -1,5 +1,9 @@
 package at.IDEE;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 public class RISDaten
 {
     static LawDetailsShort getShortData(String search)
@@ -7,29 +11,90 @@ public class RISDaten
         System.out.println("getShortLaws");
         System.out.println("search: " + search);
         LawDetailsShort shortLaw = new LawDetailsShort();
-        LawDetailShort sl1 = new LawDetailShort();
-        LawDetailShort sl2 = new LawDetailShort();
-        if (search.equals("Recht"))
-        {
-            sl1.id = "§1";
-            sl1.title = "Das Recht zu schweigen";
 
-            sl2.id = "§2";
-            sl2.title = "Das Recht auf einen anwalt";
-        }
-        else
-        {
-            sl1.id = "§3";
-            sl1.title = "Das Recht auf Ruhe";
+        try {
+            RISApiClient client = new RISApiClient();
+            String jsonResponse = client.searchBgblAuth(search);
+            JsonObject responseObj = client.parseResponse(jsonResponse)
+                    .getAsJsonObject("OgdSearchResult")
+                    .getAsJsonObject("OgdDocumentResults");
 
-            sl2.id = "§4";
-            sl2.title = "Das Recht auf Party";
+            JsonObject hitsObj = responseObj.getAsJsonObject("Hits");
+
+            String hitsText = hitsObj.get("#text").getAsString();
+            int numHits = Integer.parseInt(hitsText);
+
+            System.out.println();
+            System.out.println("Hits:" + numHits);
+
+            if (numHits > 0) {
+                if (responseObj.has("OgdDocumentReference")) {
+                    JsonElement refElement = responseObj.get("OgdDocumentReference");
+                    JsonArray results;
+
+                    if (refElement.isJsonArray()) {
+                        results = refElement.getAsJsonArray();
+                    } else {
+                        // In case the API returns a single object instead of an array for 1 hit
+                        results = new JsonArray();
+                        results.add(refElement);
+                    }
+
+                    System.out.println("Result size: " + results.size());
+                    for (JsonElement element : results) {
+                        JsonObject item = element.getAsJsonObject();
+                        LawDetailShort sl = new LawDetailShort();
+
+                        if (item.has("Data")) {
+                            JsonObject data = item.getAsJsonObject("Data");
+
+                            if (data.has("Metadaten")) {
+                                JsonObject meta = data.getAsJsonObject("Metadaten");
+                                if (meta.has("Technisch")) {
+                                    JsonObject tech = meta.getAsJsonObject("Technisch");
+                                    sl.dokid = tech.has("ID") ? tech.get("ID").getAsString() : "";
+                                    sl.url = "https://www.ris.bka.gv.at/Dokumente/BgblAuth/" + sl.dokid + "/" + sl.dokid + ".pdf";
+                                }
+                                if (meta.has("Bundesrecht")) {
+                                    JsonObject bund = meta.getAsJsonObject("Bundesrecht");
+                                    sl.title = bund.has("Kurztitel") ? bund.get("Kurztitel").getAsString() : "";
+
+                                    if (bund.has("BgblAuth")) {
+                                        JsonObject bgbl = bund.getAsJsonObject("BgblAuth");
+                                        sl.id = bgbl.has("Bgblnummer") ? bgbl.get("Bgblnummer").getAsString() : "";
+                                    }
+                                }
+                            }
+                        }
+                        shortLaw.lawDetailShort.add(sl);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        shortLaw.lawDetailShort.add(sl1);
-        shortLaw.lawDetailShort.add(sl2);
 
         return shortLaw;
     }
+
+    // LawDetailsShort test method
+//    public static void main(String[] args) {
+//        System.out.println("=== Testing RIS API Integration ===");
+//        LawDetailsShort results = getShortData("Mieter");
+//
+//        if (results.lawDetailShort.isEmpty()) {
+//            System.out.println("No results found or error occurred.");
+//        } else {
+//            System.out.println("Found " + results.lawDetailShort.size() + " laws:");
+//            for (LawDetailShort sl : results.lawDetailShort) {
+//                System.out.println("ID: " + sl.id);
+//                System.out.println("Titel: " + sl.title);
+//                System.out.println("URL: " + sl.url);
+//                System.out.println("-------------------------");
+//            }
+//        }
+//    }
+
 
     //Summary wird noch an den Ollama Client geschickt -> am anfang leer lassen oder mit dummy data füllen
     static LawDetail getLawDetail(String id)
