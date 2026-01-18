@@ -14,7 +14,7 @@ public class OllamaSummary {
     }
 
     static void summarizeBgbl(String id) throws Exception {
-        OllamaClient oc = new OllamaClient();
+        OllamaClient oc = OllamaClient.getOllamaClient();
         String model = "gemma3";
         String BaseURL = "https://www.ris.bka.gv.at/Dokumente/BgblAuth/";
         String URL = BaseURL + id + "/" + id + ".rtf";

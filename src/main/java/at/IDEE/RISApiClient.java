@@ -1,5 +1,6 @@
 package at.IDEE;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -44,7 +45,8 @@ public class RISApiClient {
         this.gson = new Gson();
     }
 
-    public String searchBgblAuth(String searchTerm) throws Exception {
+    public String searchBgblAuth(String searchTerm) throws IOException
+    {
         String encodedSearchTerm = URLEncoder.encode(searchTerm, StandardCharsets.UTF_8);
         String url = String.format("%s?Applikation=BgblAuth&Suchworte=%s&SucheInTeil1=true",
                 BASE_URL, encodedSearchTerm);
@@ -55,15 +57,77 @@ public class RISApiClient {
                 .GET()
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request,
-                HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = null;
+        try
+        {
+            response = httpClient.send(request,
+                    HttpResponse.BodyHandlers.ofString());
+        }
+        catch (InterruptedException e)
+        {
+            return "API Error: " + e.toString();
+        }
+
+        if (response.statusCode() == 200) {
+            return response.body();
+        } else {
+            return "API Error: " + response.statusCode() + " - " + response.body();
+        }
+    }
+
+    public String searchBundesgesetzAuth(String searchTerm) throws IOException
+    {
+        System.out.println("searchBundesgesetzAuth");
+        String encodedSearchTerm = URLEncoder.encode(searchTerm, StandardCharsets.UTF_8);
+        //https://www.ris.bka.gv.at/Ergebnis.wxe?Abfrage=Bundesnormen&Kundmachungsorgan=&Index=&Titel=&Gesetzesnummer=&VonArtikel=&BisArtikel=&VonParagraf=1&BisParagraf=999&VonAnlage=&BisAnlage=&Typ=&Kundmachungsnummer=&Unterzeichnungsdatum=&FassungVom=18.01.2026&VonInkrafttretedatum=&BisInkrafttretedatum=&VonAusserkrafttretedatum=&BisAusserkrafttretedatum=&NormabschnittnummerKombination=Und&ImRisSeitVonDatum=&ImRisSeitBisDatum=&ImRisSeit=Undefined&ResultPageSize=100&Suchworte=Mieter&Position=1&SkipToDocumentPage=true
+        String url = String.format("%s?Applikation=BrKons&Suchworte=%s",
+                BASE_URL, encodedSearchTerm);
+        System.out.println(url);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+
+        HttpResponse<String> response = null;
+        try
+        {
+            response = httpClient.send(request,
+                    HttpResponse.BodyHandlers.ofString());
+        }
+        catch (InterruptedException e)
+        {
+            return "API Error: " + e.toString();
+        }
+
+        if (response.statusCode() == 200) {
+            return response.body();
+        } else {
+            return "API Error: " + response.statusCode() + " - " + response.body();
+        }
+    }
+
+
+    public String loadLaw(String url) throws Exception
+    {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response =
+                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 200) {
             return response.body();
         } else {
             throw new RuntimeException("API Error: " + response.statusCode() + " - " + response.body());
         }
+
     }
+
+
 
     public JsonObject parseResponse(String jsonResponse) {
         return gson.fromJson(jsonResponse, JsonObject.class);

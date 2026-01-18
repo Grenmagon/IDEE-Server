@@ -47,8 +47,10 @@ public class IdeeHttpServer implements HttpHandler
         if (method.equals("POST") || method.equals("PUT") || method.equals("DELETE"))
         {
             String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-            //System.out.println("body: '" + body + "'");
-            parseQuery(body, params);
+            if (body.startsWith("{") && body.endsWith("}"))
+                params.put("json", body);
+            else
+                parseQuery(body, params);
 
         }
 
@@ -136,6 +138,25 @@ public class IdeeHttpServer implements HttpHandler
             if (doGet(ev))
                 return;
         }
+        else if (method.equals("POST"))
+        {
+            if (doPost(ev))
+                return;
+        }
+    }
+
+    private boolean doPost(ExchangeValues ev) throws IOException
+    {
+        System.out.println("DoPost");
+        String urlPath = getNormalizedPath(ev.exchange);
+        if (urlPath.startsWith(API + "LawDetail.json"))
+        {
+            getLawDetail(ev);
+            return true;
+        }
+        else
+            System.out.println("Nicht gefunden!");
+        return false;
     }
 
     public boolean doGet(ExchangeValues ev) throws IOException
@@ -158,11 +179,6 @@ public class IdeeHttpServer implements HttpHandler
             getShortLaws(ev);
             return true;
         }
-        else if (urlPath.startsWith(API + "LawDetail.json"))
-        {
-            getLawDetail(ev);
-            return true;
-        }
         else if (urlPath.startsWith(API + "QuizQuestions.json"))
         {
             getQuizQuestions(ev);
@@ -176,12 +192,9 @@ public class IdeeHttpServer implements HttpHandler
     private void getCategories(ExchangeValues ev) throws IOException
     {
         System.out.println("getCategories");
-        CategoriesAnswer json = new CategoriesAnswer();
-        json.categories.add("Recht");
-        json.categories.add("Wohnen");
 
         Gson gson = new Gson();
-        sendResponseString(ev.exchange, 200, gson.toJson(json));
+        //sendResponseString(ev.exchange, 200, gson.toJson(RISDaten.getCategories()));
 
     }
 
@@ -194,13 +207,17 @@ public class IdeeHttpServer implements HttpHandler
     private void getShortLaws(ExchangeValues ev) throws IOException
     {
         Gson gson = new Gson();
-        sendResponseString(ev.exchange, 200, gson.toJson(RISDaten.getShortData(ev.params.get("category"))));
+        sendResponseString(ev.exchange, 200, gson.toJson(RISDaten.getShortDataBundesrecht(ev.params.get("category"))));
     }
 
     private void getLawDetail(ExchangeValues ev) throws IOException
     {
+        System.out.println("getLawDetail");
         Gson gson = new Gson();
-        sendResponseString(ev.exchange, 200, gson.toJson(RISDaten.getLawDetail(ev.params.get("id"))));
+        AskLawDetail asd = gson.fromJson(ev.params.get("json"), AskLawDetail.class);
+
+        LawDetail ld = RISDaten.getLaw(asd);
+        sendResponseString(ev.exchange, 200, gson.toJson(ld));
     }
 
     private void getQuizQuestions(ExchangeValues ev) throws IOException

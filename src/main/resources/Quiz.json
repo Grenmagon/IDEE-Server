@@ -1,0 +1,153 @@
+{
+  "quiz": [
+    {
+      "week": 3,
+      "questions": [
+        {
+          "questionText": "What is my Name?",
+          "difficulty": "einfach",
+          "options": [
+            {
+              "text": "Heisenberg",
+              "isCorrect": true
+            },
+            {
+              "text": "Einstein",
+              "isCorrect": false
+            },
+            {
+              "text": "Faraday",
+              "isCorrect": false
+            },
+            {
+              "text": "Gauß",
+              "isCorrect": false
+            }
+          ],
+          "explanation": "Schau mehr Breaking Bad!"
+        },
+        {
+          "questionText": "Tick, Trick und ",
+          "difficulty": "einfach",
+          "options": [
+            {
+              "text": "Treck",
+              "isCorrect": false
+            },
+            {
+              "text": "Truck",
+              "isCorrect": false
+            },
+            {
+              "text": "Track",
+              "isCorrect": true
+            },
+            {
+              "text": "Trock",
+              "isCorrect": false
+            }
+          ],
+          "explanation": "Lies mehr Micky Maus"
+        },
+        {
+          "questionText": "Der beste Superhero",
+          "difficulty": "einfach",
+          "options": [
+            {
+              "text": "Batman",
+              "isCorrect": false
+            },
+            {
+              "text": "Superman",
+              "isCorrect": false
+            },
+            {
+              "text": "Captain America",
+              "isCorrect": false
+            },
+            {
+              "text": "Iron Man",
+              "isCorrect": true
+            }
+          ],
+          "explanation": "Get Gud"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "questions": [
+        {
+          "questionText": "What is my Name?",
+          "difficulty": "einfach",
+          "options": [
+            {
+              "text": "Heisenberg",
+              "isCorrect": true
+            },
+            {
+              "text": "Einstein",
+              "isCorrect": false
+            },
+            {
+              "text": "Faraday",
+              "isCorrect": false
+            },
+            {
+              "text": "Gauß",
+              "isCorrect": false
+            }
+          ],
+          "explanation": "Schau mehr Breaking Bad!"
+        },
+        {
+          "questionText": "Tick, Trick und ",
+          "difficulty": "einfach",
+          "options": [
+            {
+              "text": "Treck",
+              "isCorrect": false
+            },
+            {
+              "text": "Truck",
+              "isCorrect": false
+            },
+            {
+              "text": "Track",
+              "isCorrect": true
+            },
+            {
+              "text": "Trock",
+              "isCorrect": false
+            }
+          ],
+          "explanation": "Lies mehr Micky Maus"
+        },
+        {
+          "questionText": "Der beste Superhero",
+          "difficulty": "einfach",
+          "options": [
+            {
+              "text": "Batman",
+              "isCorrect": false
+            },
+            {
+              "text": "Superman",
+              "isCorrect": false
+            },
+            {
+              "text": "Captain America",
+              "isCorrect": false
+            },
+            {
+              "text": "Iron Man",
+              "isCorrect": true
+            }
+          ],
+          "explanation": "Get Gud"
+        }
+      ]
+    }
+  ]
+}
+

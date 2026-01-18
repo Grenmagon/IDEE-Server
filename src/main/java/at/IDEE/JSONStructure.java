@@ -1,5 +1,6 @@
 package at.IDEE;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +19,6 @@ class OllamaResponse
     boolean done;
 }
 
-class CategoriesAnswer
-{
-    List<String> categories = new ArrayList<>();
-}
-
 class Funfact
 {
     String text;
@@ -34,6 +30,13 @@ class LawDetailShort
     String dokid;
     String id;
     String title;
+}
+
+class AskLawDetail
+{
+    String id;
+    String datetime;
+    String address;
 }
 
 class LawDetailsShort
@@ -50,6 +53,7 @@ class LawDetail
     String summary;
     String officialText;
     String source;
+    String lawyer;
 }
 
 class AnswerOption
@@ -68,5 +72,11 @@ class QuizQuestion
 
 class QuizQuestions
 {
+    int week;
     List<QuizQuestion> questions = new ArrayList<>();
+}
+
+class Quizes
+{
+    List<QuizQuestions> quiz = new ArrayList<>();
 }
